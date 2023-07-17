@@ -49,5 +49,5 @@ export const cartReducer = createReducer(
       state.tax = (state.subTotal+state.shipping)*0.18;
       state.total = sum + state.shipping + state.tax;
     },
-  }
+  };
 );
