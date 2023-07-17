@@ -2,49 +2,84 @@ import {
   Box,
   HStack,
   Heading,
-  Stack,
   VStack,
   Image,
   Text,
   Button,
 } from '@chakra-ui/react';
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-const cart = () => {
-  const image =
-    'https://www.apple.com/newsroom/images/product/mac/standard/Apple_MacBook-Pro_14-16-inch_10182021_big.jpg.slideshow-xlarge_2x.jpg';
+const Cart = () => {
+  const { cartItems, subTotal, shipping, total, tax } = useSelector(
+    state => state.cart
+  );
 
   return (
     <>
-      <Stack>
-        <HStack>
-          <Box height={'70vh'} width={'1900px'} overflow={'scroll'}>
-            <Card image={image} />
+      {cartItems.length === 0 ? (
+        <Heading p={5} fontWeight={0} opacity={0.5} lineHeight={'2'}>
+          No items yet
+        </Heading>
+      ) : (
+        <HStack
+          flexDirection={['column', 'row']}
+          justifyContent={'space-evenly'}
+        >
+          <Box height={'370px'} overflow={'scroll'}>
+            {cartItems.map(value => {
+              return (
+                <Card
+                  key={value.id}
+                  id={value.id}
+                  image={value.image}
+                  name={value.name}
+                  price={value.price}
+                  qty={value.quantity}
+                />
+              );
+            })}
           </Box>
           <Box
-            border={'2px solid yellow'}
-            height={'70vh'}
-            width={'50%'}
+            // border={'3px solid green'}
+            my={'120px'}
             display="flex"
             alignItems="center"
             justifyContent="center"
           >
             <Box>
               <VStack spacing={4}>
-                <Heading>Subtotal: 120000</Heading>
-                <Heading>Shipping: 100</Heading>
-                <Heading>Tax: 20</Heading>
-                <Heading>Total: 120120</Heading>
+                <Heading fontWeight={0}>
+                  Subtotal: ${subTotal.toFixed(2)}
+                </Heading>
+                <Heading fontWeight={0}>Shipping: ${shipping}</Heading>
+                <Heading fontWeight={0}>Tax: ${tax.toFixed(2)}</Heading>
+                <Heading fontWeight={0}>Total: ${total.toFixed(2)}</Heading>
               </VStack>
             </Box>
           </Box>
         </HStack>
-      </Stack>
+      )}
     </>
   );
 };
 
-const Card = ({ image }) => {
+const Card = ({ image, name, price, qty, id }) => {
+  const dispatch = useDispatch();
+  const increment = id => {
+    dispatch({ type: 'addToCart', payload: { id } });
+    dispatch({ type: 'calculateBill' });
+  };
+  const decrement = id => {
+    dispatch({ type: 'decrement', payload: { id } });
+    dispatch({ type: 'calculateBill' });
+  };
+
+  const deleteHandler = () => {
+    dispatch({ type: 'remove', payload: { id } });
+    dispatch({ type: 'calculateBill' });
+  };
+
   return (
     <>
       <Box
@@ -55,29 +90,41 @@ const Card = ({ image }) => {
         color={'black'}
         fontWeight={'bold'}
       >
-        <HStack>
+        <HStack display={'flex'} flexDirection={['column','row']}>
           <Box>
             <VStack alignItems={'baseline'}>
               <Image src={image} maxWidth={'20%'} />
-              <h3>Macbook</h3>
-              <Text>$1300</Text>
+              <h3>{name}</h3>
+              <Text>${price}</Text>
             </VStack>
           </Box>
           <Box p={2}>
             <HStack>
-              <Button color={'white'} bgColor={'rgb(29, 29, 29)'} m={2}>
+              <Button
+                color={'white'}
+                bgColor={'rgb(29, 29, 29)'}
+                m={1}
+                onClick={() => increment(id)}
+              >
                 +
               </Button>
-              <Text>0</Text>
-              <Button color={'white'} bgColor={'rgb(29, 29, 29)'} m={2}>
+              <Text>{qty}</Text>
+              <Button
+                color={'white'}
+                bgColor={'rgb(29, 29, 29)'}
+                m={1}
+                onClick={() => decrement(id)}
+              >
                 -
               </Button>
-            </HStack>
-          </Box>
-          <Box>
-            <Button color={'white'} bgColor={'rgb(29, 29, 29)'}>
+            <Button
+              color={'white'}
+              bgColor={'rgb(29, 29, 29)'}
+              onClick={() => deleteHandler(id)}
+            >
               Delete
             </Button>
+            </HStack>
           </Box>
         </HStack>
       </Box>
@@ -85,4 +132,4 @@ const Card = ({ image }) => {
   );
 };
 
-export default cart;
+export default Cart;

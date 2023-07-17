@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, IconButton, useColorMode } from '@chakra-ui/react';
+import { Box, Flex, Heading, Icon, IconButton, useColorMode } from '@chakra-ui/react';
 import { FaShoppingCart, FaSun, FaMoon } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ const Navbar = () => {
     >
       <Box>
         <Box fontWeight="bold">
-          <Link to={'/'}>Looto</Link>
+          <Link to={'/'}><Heading>Looto</Heading></Link>
         </Box>
       </Box>
       <Box>
@@ -31,6 +31,7 @@ const Navbar = () => {
         />
         <Link to={'/Cart'}>
           <IconButton
+            className='shoppingIcon'
             aria-label="Shopping Cart"
             icon={<Icon as={FaShoppingCart} />}
             size="md"

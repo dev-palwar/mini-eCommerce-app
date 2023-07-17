@@ -1,18 +1,25 @@
 import React, { useEffect, useState } from 'react';
+import { Progress } from '@chakra-ui/react';
 import { Container, HStack } from '@chakra-ui/react';
-import { Box, Image, Text, Badge, Button } from '@chakra-ui/react';
 import axios from 'axios';
+import ShoppingItemCard from '../Components/ShoppingItemCard';
 
 const Home = () => {
   const [data, setData] = useState([]);
+  const [loading, setloading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await axios.get(
-        'https://fakestoreapi.com/products?limit=20'
-      );
-      console.log(data);
-      setData(data);
+      try {
+        const { data } = await axios.get(
+          'https://fakestoreapi.com/products?limit=20'
+        );
+        // console.log(data);
+        setData(data);
+        setloading(false);
+      } catch (error) {
+        console.log('An error occurred:', error);
+      }
     };
 
     fetchData();
@@ -20,47 +27,18 @@ const Home = () => {
 
   return (
     <>
-      <Container maxWidth={'container.xl'} my={2}>
-        <HStack wrap={'wrap'} justifyContent={'center'} gap={'1.2rem'}>
-          {/* Cards */}
-          {data.map(value => {
-            return <ShoppingItemCard item={value} key={value.id} />;
-          })}
-        </HStack>
-      </Container>
+      {loading === true ? (
+        <Progress size="xs" isIndeterminate />
+      ) : (
+        <Container maxWidth={'container.xl'} my={2}>
+          <HStack wrap={'wrap'} justifyContent={'center'} gap={'1.2rem'}>
+            {data.map(value => {
+              return <ShoppingItemCard item={value} key={value.id} />;
+            })}
+          </HStack>
+        </Container>
+      )}
     </>
-  );
-};
-
-const ShoppingItemCard = ({ item }) => {
-  //   const { title, image, price } = item;
-
-  return (
-    <Box
-      maxW="sm"
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-      boxShadow="md"
-      display={'flex'}
-      flexDirection={'column'}
-    >
-      <Image
-        src={item.image}
-        alt={item.title}
-        height="200px"
-        objectFit="cover"
-      />
-      <Box p={4}>
-        <Text fontSize="xl" fontWeight="bold" mb={2}>
-          {item.title}
-        </Text>
-        <Text fontSize="lg" mb={2}>
-          ${item.price}
-        </Text>
-        <Button colorScheme="blue">Add to Cart</Button>
-      </Box>
-    </Box>
   );
 };
 
